@@ -1,2 +1,10 @@
-for paper on single-cell multimodal RNA+ATAC
-exploring T cell states and especially CD8 progenitors
+## Code for Walker _et al_. `Single-cell multiomics reveals archetypal regulatory programs shared across CD4 and CD8 T cell subsets in viral infection` doi: https://doi.org/10.1101/2025.09.08.675014
+
+
+#### Summary of our scATAC-seq pipeline:
+1. Build a good peak set using bulk ATAC-seq data related to the cell types you are analyzing. Here, we build a bulk compendium for analyzing T cell data using 17 bulk ATAC datasets. You can find this peak set in the supplementary data for our paper. This bulk peak set allows you to define peak signatures, essentially differentially accessible peaks between different samples (cell types). You can then use these sets of peaks (for example LFC > 1, padj <= 0.05 to identify one cell type vs  LFC < -1, padj <= 0.05  to identify the other cell type) by scoring these peaks in your single-cell data.
+2. Analyze scATAC-seq using the full counts distribution, instead of binarizing counts. Here, we use the Pearson residual normalization, selecting a value of theta that generates expected results: gene means across cells are ~0, and gene variances across cells are ~1.
+3. Identify cell states using both the accessibility at peaks near specific gene markers, as well as by scoring bulk signatures (explained above).
+4. Apply archetypal analysis to learn regulatory programs shared between cell states (`fast_aa.py`). Archetypal analysis decomposes your cell x peak matrix into a cell x archetype and archetype x peak matrix, where the cell x archetype matrix is essentially weights, such that each cell has some probabilitiy of being assigned to an archetype, and the archetype x peak matrix is essentially accessibility profiles for each archetype (in the same normalization as your original cell x peak matrix). You can also relate these to TF motifs, as well as gene expression (if you have a multimodal dataset where you profiled the same cells in both scATAC-seq and scRNA-seq), to really probe the modular regulatory architecture of your data.
+
+You can see examples of how we apply this scATAC-seq pipeline in the `analyses` folder, where we analyze our own scATAC-seq dataset (`initial_atac_modality.ipynb`) as well as previously published scATAC-seq datasets (`satpathy initial analysis.ipynb`, `wherry analysis.ipynb`).
